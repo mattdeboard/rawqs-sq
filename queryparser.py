@@ -30,12 +30,7 @@ def parse(qs):
         # from the querystring.
         pairs = [Pair(i[0], i[1]) for i in zip(clauses[::2], clauses[1::2])]
         if content:
-            content_terms.append(content)
-        else:
-            clauses.pop(0)
-
-    if content:
-        pairs.append(Pair(HAYSTACK_DOCUMENT_FIELD, content))
+            pairs.append(Pair(HAYSTACK_DOCUMENT_FIELD, content[0]))
 
     top_sq = _field_pairs(pairs)
     
