@@ -70,7 +70,6 @@ def parse(qs, micromanage=False):
     object that expresses the same search.
 
     """
-    content_terms = []
     Pair = namedtuple("Pair", "field term")
     # To do: Add re.U
     clause_re = re.compile("(\w+):")
