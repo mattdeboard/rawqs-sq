@@ -72,5 +72,20 @@ def subterms(subterms, field="content"):
 
         yield SQ([field, subterm])
 
+def querytree(s):
+    """
+    Build a list of nodes to describe the nested structure of a querystring.
+
+    """
+    Node = namedtuple("Node", "level value")
+    stack = []
+
+    for idx, char in enumerate(s):
+        if char == "(":
+            stack.append(idx)
+        elif char == ")":
+            start = stack.pop()
+            yield Node(len(stack), s[start+1:idx])
+    
 def in_parens(s):
     return (s.startswith("(") and s.endswith(")"))
