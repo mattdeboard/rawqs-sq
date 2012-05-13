@@ -72,3 +72,5 @@ def subterms(subterms, field="content"):
 
         yield SQ([field, subterm])
 
+def in_parens(s):
+    return (s.startswith("(") and s.endswith(")"))
