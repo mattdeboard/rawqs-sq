@@ -64,7 +64,7 @@ class ClauseVisitor(ast.NodeVisitor):
         self.nodestack.append(node_val)
 
         
-def parse(qs):
+def parse(qs, micromanage=False):
     """
     Parse a user-defined raw querystring 'qs' and return a single SQ
     object that expresses the same search.
@@ -88,14 +88,14 @@ def parse(qs):
     if content:
         pairs.append(Pair(HAYSTACK_DOCUMENT_FIELD, content))
 
-    top_sq = field_pairs(pairs)
+    top_sq = field_pairs(pairs, micromanage=micromanage)
     
     if top_sq:
         return reduce(OPERATORS[HAYSTACK_DEFAULT_OPERATOR], top_sq)
     else:
         return None
 
-def field_pairs(pairs):
+def field_pairs(pairs, micromanage=False):
     """
     Yields an SQ object encapsulating the logic for the search terms
     specified for a single field. For example, for the querystring
@@ -104,11 +104,23 @@ def field_pairs(pairs):
 
     would yield two separate SQ objects from this function.
 
-    Input is a list of ``Pair`` namedtuple instances. Returns a generator.
+    Input is a list of ``Pair`` namedtuple instances. If 'micromanage'
+    is set to True, this function will not perform processing of the term
+    south. Instead, it will return an SQ where the term is the entirety of
+    'pair.term', e.g. when micromanage == True:
+    <SQ: OR (state__contains=Kentucky OR state__contains=Virginia OR
+             state__exact=North Carolina)>
+
+    when False:
+    <SQ: AND state__contains=(Kentucky OR Virginia OR "North Carolina")>
+    
     
     """
     for pair in pairs:
-        yield build_sq(pair.term, field=pair.field)
+        if micromanage:
+            yield build_sq(pair.term, field=pair.field)
+        else:
+            yield SQ([pair.field, pair.term])
 
 def build_sq(qs, field=HAYSTACK_DOCUMENT_FIELD, oper=operator.or_):
     """
