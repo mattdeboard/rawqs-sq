@@ -67,7 +67,17 @@ class ClauseVisitor(ast.NodeVisitor):
 def parse(qs, micromanage=False):
     """
     Parse a user-defined raw querystring 'qs' and return a single SQ
-    object that expresses the same search.
+    object that expresses the same search. If 'micromanage'
+    is set to True, this function will not perform processing of the term
+    south. Instead, it will return an SQ where the term is the entirety of
+    'pair.term', e.g. when micromanage == True:
+    
+    <SQ: OR (state__contains=Kentucky OR state__contains=Virginia OR
+             state__exact=North Carolina)>
+
+    when False:
+    
+    <SQ: AND state__contains=(Kentucky OR Virginia OR "North Carolina")>
 
     """
     Pair = namedtuple("Pair", "field term")
@@ -94,7 +104,7 @@ def parse(qs, micromanage=False):
     else:
         return None
 
-def field_pairs(pairs, micromanage=False):
+def field_pairs(pairs, micromanage):
     """
     Yields an SQ object encapsulating the logic for the search terms
     specified for a single field. For example, for the querystring
@@ -103,16 +113,7 @@ def field_pairs(pairs, micromanage=False):
 
     would yield two separate SQ objects from this function.
 
-    Input is a list of ``Pair`` namedtuple instances. If 'micromanage'
-    is set to True, this function will not perform processing of the term
-    south. Instead, it will return an SQ where the term is the entirety of
-    'pair.term', e.g. when micromanage == True:
-    <SQ: OR (state__contains=Kentucky OR state__contains=Virginia OR
-             state__exact=North Carolina)>
-
-    when False:
-    <SQ: AND state__contains=(Kentucky OR Virginia OR "North Carolina")>
-    
+    Input is a list of ``Pair`` namedtuple instances. 
     
     """
     for pair in pairs:
