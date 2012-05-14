@@ -71,10 +71,11 @@ class ClauseVisitor(ast.NodeVisitor):
 def parse(qs, micromanage=False):
     """
     Parse a user-defined raw querystring 'qs' and return a single SQ
-    object that expresses the same search. If 'micromanage'
-    is set to True, this function will not perform processing of the term
-    south. Instead, it will return an SQ where the term is the entirety of
-    'pair.term', e.g. when micromanage == True:
+    object that expresses the same search. If 'micromanage' is set to
+    True, this function will perform some additional processing of the
+    query term as described in the doc for ``build_sq``. Otherwise, it
+    will return an SQ where the term is the entirety of 'pair.term',
+    e.g. when micromanage == True:
     
     <SQ: OR (state__contains=Kentucky OR state__contains=Virginia OR
              state__exact=North Carolina)>
