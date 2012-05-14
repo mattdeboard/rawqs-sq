@@ -86,8 +86,7 @@ def parse(qs, micromanage=False):
 
     """
     Pair = namedtuple("Pair", "field term")
-    # To do: Add re.U
-    clause_re = re.compile("(\w+):")
+    clause_re = re.compile("(\w+):", re.U)
     clauses = re.split(clause_re, qs)
     # If 'qs' starts with a field-less search term, it will be the 0th element
     # in the returned list. If 'qs' starts with 'field:term' pairs, it will be
