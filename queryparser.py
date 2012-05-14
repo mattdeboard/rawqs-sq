@@ -63,6 +63,10 @@ class ClauseVisitor(ast.NodeVisitor):
             
         self.nodestack.append(node_val)
 
+    def visit_Num(self, node):
+        self.generic_visit(node)
+        self.nodestack.append(node.n)
+
         
 def parse(qs, micromanage=False):
     """
@@ -162,7 +166,8 @@ def build_sq(qs, field=HAYSTACK_DOCUMENT_FIELD, oper=operator.or_):
             # get an exact match, e.g. ``state:(Kentucky OR "North Carolina")``,
             # we'll use Haystack's ``__exact`` syntax to make sure that is
             # honored.
-            if node.startswith('"') and node.endswith('"'):
+            if isinstance(node, basestring) and (node.startswith('"') and
+                                                 node.endswith('"')):
                 node = node.strip('"')
                 f = "%s__exact" % field
             else:
